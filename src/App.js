@@ -17,9 +17,13 @@ class App extends Component {
   }
 
   componentDidMount(){
-    this.updateTime()
+    let time = new Date().toLocaleTimeString();
+    this.setState({ time: time })
     setInterval( () => this.updateTime(), 1000);
   }
+  // componentWillReceiveProps(nextProps){
+  //   console.log(nextProps)
+  // }
   updateTime(){
     let time = new Date().toLocaleTimeString();
     this.setState({ time: time })
@@ -58,14 +62,14 @@ class App extends Component {
   sendgeoSearch = address => {
     axios({
       method: "GET",
-      url: `${process.env.REACT_APP_URI}${process.env.REACT_APP_GEOCODE}${process.env.REACT_APP_KEY}${address}`
+      url: `${process.env.REACT_APP_URI}${process.env.REACT_APP_GEOCODE}${process.env.REACT_APP_KEY}&address=${address}`
     })
     .then( search => {
-      const timestamp = new Date().getTime();
-      const searchQuery = `location=${search.data.results[0].geometry.location.lat},${search.data.results[0].geometry.location.lng}&timestamp=${timestamp/1000}`
       this.setState({
         searchLoc: search.data.results[0].formatted_address
       })
+      const timestamp = new Date().getTime();
+      const searchQuery = `location=${search.data.results[0].geometry.location.lat},${search.data.results[0].geometry.location.lng}&timestamp=${timestamp/1000}`
       this.sendTimeZoneSearch(searchQuery);
     });
   }
@@ -73,7 +77,7 @@ class App extends Component {
   sendTimeZoneSearch = query => {
     axios({
       method: 'GET',
-      url: `${process.env.REACT_APP_URI}${process.env.REACT_APP_GEOCODE}${process.env.REACT_APP_KEY}${query}`
+      url: `${process.env.REACT_APP_URI}${process.env.REACT_APP_TIMEZONE}${process.env.REACT_APP_KEY}&${query}`
     })
     .then(search => {
       this.setState({
